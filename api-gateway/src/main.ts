@@ -15,7 +15,7 @@ async function bootstrap() {
 
   app.setGlobalPrefix('v1');
   const config = new DocumentBuilder()
-    .setTitle('Nestjs Microservices API')
+    .setTitle('API')
     .setVersion('1.0')
     .addBearerAuth(
       {

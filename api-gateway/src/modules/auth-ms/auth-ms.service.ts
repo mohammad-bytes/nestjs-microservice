@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpException, Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { MICRO_SERVICE } from 'src/utils/constants';
@@ -14,26 +14,18 @@ export class AuthMsService {
 
 
     signIn(req: { log: object; user: any }, body: SignInDto) {
-        try {
-            return firstValueFrom(this.authServiceClient.send(
-                { cmd: MICRO_SERVICE.AUTH_MS.EVENTS.SIGNIN },
-                { log: req.log, data: body }
-            ))
-        } catch (error) {
-            console.log("🚀 ~ AuthMsService ~ login ~ error:", error)
-        }
+        return firstValueFrom(this.authServiceClient.send(
+            { cmd: MICRO_SERVICE.AUTH_MS.EVENTS.SIGNIN },
+            { log: req.log, data: body }
+        )).catch((error) => {
+            throw new HttpException(error.message, error.statusCode);
+        })
     }
 
     signUp(req: { log: object; user: any }, body: SignUpDto) {
-        try {
-            return firstValueFrom(this.authServiceClient.send(
-                { cmd: MICRO_SERVICE.AUTH_MS.EVENTS.SIGNUP },
-                { log: req.log, data: body }
-            ))
-        } catch (error) {
-            console.log("🚀 ~ AuthMsService ~ login ~ error:", error)
-        }
+        return firstValueFrom(this.authServiceClient.send(
+            { cmd: MICRO_SERVICE.AUTH_MS.EVENTS.SIGNUP },
+            { log: req.log, data: body }
+        ))
     }
-
-
 }

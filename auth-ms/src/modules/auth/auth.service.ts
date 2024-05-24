@@ -19,17 +19,15 @@ export class AuthService {
             const { log, data } = payload;
             const user = await this.userAccountModel.findOne({ email: data.email.trim() });
             if (!user) {
-                throw new RpcException('Invalid login Credentials')
+                throw new UnauthorizedException('Invalid login Credentials')
             }
             const isPassword = await bcrypt.compare(data.password, user.password);
             if (!isPassword) {
-                throw new RpcException('Invalid login Credentials')
+                throw new UnauthorizedException('Invalid login Credentials')
             }
             return new ResponseFormatter(HttpStatus.ACCEPTED, 'SIGNIN_SUCCESS', null, null);
         } catch (error) {
-            console.log(error);
-            
-            throw new RpcException(error)
+            throw new RpcException({ message: error.message, statusCode: error.status || HttpStatus.INTERNAL_SERVER_ERROR })
         }
     }
 
@@ -45,7 +43,7 @@ export class AuthService {
 
             return new ResponseFormatter(HttpStatus.CREATED, 'SIGNUP_SUCCESS', null, result);
         } catch (error) {
-            throw new HttpException(error.mesage, error.status || HttpStatus.INTERNAL_SERVER_ERROR)
+            throw new RpcException({ message: error.message, statusCode: error.status || HttpStatus.INTERNAL_SERVER_ERROR })
         }
     }
 
